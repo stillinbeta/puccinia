@@ -3,6 +3,8 @@ use rand::FromEntropy;
 use rand::Rng;
 use std::convert::TryFrom;
 
+pub mod view;
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 enum Cell {
     Alive,
@@ -12,6 +14,15 @@ enum Cell {
 impl Default for Cell {
     fn default() -> Cell {
         Cell::Dead
+    }
+}
+
+impl Cell {
+    pub fn toggle(self) -> Self {
+        match self {
+            Cell::Alive => Cell::Dead,
+            Cell::Dead => Cell::Alive,
+        }
     }
 }
 
@@ -27,6 +38,13 @@ impl Grid {
         let row: Vec<Cell> = (0..y_size).map(|_| Cell::Dead).collect();
         Grid {
             grid: (0..x_size).map(|_| row.clone()).collect(),
+        }
+    }
+
+    pub fn size(&self) -> (usize, usize) {
+        match self.grid.first() {
+            None => (0, 0),
+            Some(r) => (self.grid.len(), r.len()),
         }
     }
 
