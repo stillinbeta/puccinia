@@ -128,10 +128,17 @@ impl View for ResizableGrid {
                 self.grid = self.grid.tick();
             }
             Event::Char(' ') => self.pause = !self.pause,
+            Event::Char('h') => {
+                self.pause = true;
+                return EventResult::Consumed(Some(Callback::from_fn(|siv| {
+                    siv.add_layer(help_dialog())
+                })));
+            }
             Event::Char('r') => {
+                self.pause = true;
                 return EventResult::Consumed(Some(Callback::from_fn(|siv| {
                     siv.add_layer(reset_dialog())
-                })))
+                })));
             }
             Event::Mouse {
                 position: p,
