@@ -5,7 +5,7 @@ use cursive::traits::Identifiable;
 use cursive::Cursive;
 
 fn main() {
-    let mut siv = Cursive::default();
+    let mut siv = Cursive::termion().expect("Failed to open terminal");
 
     siv.add_global_callback('q', |s| s.quit());
 

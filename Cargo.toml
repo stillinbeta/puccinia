@@ -6,5 +6,9 @@ edition = "2018"
 
 [dependencies]
 rand = "0.6"
-cursive = "0.11"
-
+cursive = { version = "0.11", default_features = false, features = ["termion-backend"] }
+termion = "1.5"
+# crossbeam-channel = "0.3.6"
+tokio = "0.1.18"
+futures = "0.1"
+termiontelnet = { path = "../termiontelnet" }
