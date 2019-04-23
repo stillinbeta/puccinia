@@ -6,7 +6,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: project-cache
+          key: build-cache
       - run:
           name: Print version information
           command: rustc --version; cargo --version
@@ -23,7 +23,7 @@ jobs:
           name: "Run clippy"
           command: cargo clippy -- -D warnings
       - save_cache:
-          key: project-cache
+          key: build-cache
           paths:
             - "~/.cargo"
             - "./target"
@@ -33,7 +33,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: project-cache
+          key: release-cache
       - run:
           name: "Build release package"
           command: cargo build --release
@@ -51,7 +51,7 @@ jobs:
               docker push stillinbeta/puccinia:$TIME
               docker push stillinbeta/puccinia:latest
       - save_cache:
-          key: project-cache
+          key: release-cache
           paths:
             - "~/.cargo"
             - "./target"
