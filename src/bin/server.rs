@@ -13,10 +13,12 @@ use tokio::net::TcpListener;
 use tokio::prelude::*;
 
 fn main() {
-    let listen_addr = std::env::var("BIND_ADDRESS").unwrap_or("127.0.0.1".into());
+    let listen_addr = std::env::var("BIND_ADDRESS").unwrap_or("0.0.0.0".into());
     let listen_port = std::env::var("PORT").unwrap_or("12345".into());
 
-    let addr = format!("{}:{}", listen_addr, listen_port).parse().unwrap();
+    let addr = format!("{}:{}", listen_addr, listen_port)
+        .parse()
+        .expect("couldn't parse port");
     let listener = TcpListener::bind(&addr).expect("couldn't listen");
 
     println!("Listening on {}", addr);
@@ -47,7 +49,8 @@ fn main() {
 
                     let _handler = thread::spawn(|| {
                         // TODO: handle error gracefully
-                        let mut c = cursive::Cursive::termion_telnet(c).unwrap();
+                        let mut c =
+                            cursive::Cursive::termion_telnet(c).expect("failed to start Cursive");
                         puccinia::setup_cursive(&mut c);
                         c.run()
                     });
