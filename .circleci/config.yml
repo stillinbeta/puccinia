@@ -1,0 +1,57 @@
+version: 2
+jobs:
+  test:
+    docker:
+    - image: circleci/rust
+    steps:
+      - checkout
+      - run:
+          name: Print version information
+          command: rustc --version; cargo --version
+      - run:
+          name: "Build all packages"
+          command: cargo build --verbose
+      - run:
+          name: "Run tests"
+          command: cargo test --verbose
+      - run:
+          name: install clippy
+          command: rustup component add clippy
+      - run:
+          name: "Run clippy"
+          command: cargo clippy -- -D warnings
+  build:
+    docker:
+    - image: circleci/rust
+    steps:
+      - checkout
+      - run:
+          name: "Build release package"
+          command: cargo build --release
+      - setup_remote_docker
+      - run: "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+      - run:
+          name: "build docker image"
+          command: "docker build -t puccinia ."
+      - run:
+          name: "tag and push docker image"
+          command: |
+              TIME=$(date +%s)
+              docker tag puccinia stillinbeta/puccinia:$(TIME)
+              docker tag puccinia stillinbeta/puccinia:latest
+              docker push stillinbeta/puccinia:$(TIME)
+              docker push stillinbeta/puccinia:latest
+
+
+workflows:
+  version: 2
+  run:
+    jobs:
+      - test
+      - build:
+          requires:
+          - test
+          filters:
+            branches:
+              only: master
+    
