@@ -12,7 +12,7 @@ futures = "0.1"
 
 [dependencies.cursive]
 git = "https://github.com/stillinbeta/Cursive.git"
-rev = "7c82b6a6bcb357b7e4267926c81bfa8de052e639"
+rev = "36535109ca5ca6fc0972ce11f7d44760bdb663bc"
 features = ["termion-backend", "termion-telnet-backend" ]
 
 [dependencies.termion]
