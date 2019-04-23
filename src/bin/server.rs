@@ -13,8 +13,8 @@ use tokio::net::TcpListener;
 use tokio::prelude::*;
 
 fn main() {
-    let listen_addr = std::env::var("BIND_ADDRESS").unwrap_or("0.0.0.0".into());
-    let listen_port = std::env::var("PORT").unwrap_or("12345".into());
+    let listen_addr = std::env::var("BIND_ADDRESS").unwrap_or_else(|_| "0.0.0.0".into());
+    let listen_port = std::env::var("PORT").unwrap_or_else(|_| "12345".into());
 
     let addr = format!("{}:{}", listen_addr, listen_port)
         .parse()
@@ -57,7 +57,7 @@ fn main() {
 
                     stream.for_each(move |msg| {
                         let evt = match msg {
-                            ResizeEvent(w, h) => TelnetEvent::ResizeEvent(h, w),
+                            ResizeEvent(width, height) => TelnetEvent::ResizeEvent(height, width),
                             TermionEvent(evt) => TelnetEvent::TEvent(evt),
                             _ => return future::ok(()),
                         };

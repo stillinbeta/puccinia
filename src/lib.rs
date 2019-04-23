@@ -29,7 +29,7 @@ impl Cell {
 }
 
 pub fn setup_cursive(siv: &mut Cursive) {
-    siv.add_global_callback('q', |s| s.quit());
+    siv.add_global_callback('q', cursive::Cursive::quit);
 
     siv.add_fullscreen_layer(crate::view::ResizableGrid::default().with_id("grid"));
     siv.add_layer(crate::view::help_dialog());

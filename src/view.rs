@@ -33,9 +33,10 @@ pub fn help_dialog() -> Box<dyn View> {
     Box::new(
         Dialog::around(layout)
             .button("OK", |siv| {
-                siv.find_id("grid").map(|mut view: ViewRef<ResizableGrid>| {
-                    view.pause = false;
-                });
+                let grid: Option<ViewRef<ResizableGrid>> = siv.find_id("grid");
+                if let Some(mut view) = grid {
+                    view.pause = false
+                }
                 siv.pop_layer();
             })
             .title("Welcome to the game of life"),
@@ -45,10 +46,10 @@ pub fn help_dialog() -> Box<dyn View> {
 pub fn reset_dialog() -> Box<dyn View> {
     let slider = SliderView::horizontal(SLIDER_SIZE)
         .on_change(|siv, value| {
-            siv.find_id("percentage")
-                .map(|mut view: ViewRef<TextView>| {
-                    view.set_content(format!("{}%", value * 100 / SLIDER_SIZE))
-                });
+            let percentage: Option<ViewRef<TextView>> = siv.find_id("percentage");
+            if let Some(mut view) = percentage {
+                view.set_content(format!("{}%", value * 100 / SLIDER_SIZE))
+            }
             siv.set_user_data(value);
         })
         .with_id("slider");
@@ -68,13 +69,14 @@ pub fn reset_dialog() -> Box<dyn View> {
     let dialog = Dialog::around(linear)
         .dismiss_button("Cancel")
         .button("OK", |siv| {
-            let percent = siv.user_data::<usize>().map(|p| *p).unwrap_or(0);
+            let percent = siv.user_data::<usize>().cloned().unwrap_or(0);
             let probability = (percent as f64) / (SLIDER_SIZE as f64);
 
-            siv.find_id("grid").map(|mut view: ViewRef<ResizableGrid>| {
+            let grid: Option<ViewRef<ResizableGrid>> = siv.find_id("grid");
+            if let Some(mut view) = grid {
                 view.reset(probability);
                 view.pause = false;
-            });
+            }
             siv.pop_layer();
         })
         .title("Create a new grid?");
@@ -146,11 +148,9 @@ impl View for ResizableGrid {
                 ..
             } => {
                 if let MouseEvent::Press(_) = evt {
-                    self.grid
-                        .grid
-                        .get_mut(p.x)
-                        .and_then(|r| r.get_mut(p.y))
-                        .map(|v| *v = v.toggle());
+                    if let Some(view) = self.grid.grid.get_mut(p.x).and_then(|r| r.get_mut(p.y)) {
+                        *view = view.toggle()
+                    }
                 }
             }
             _ => return EventResult::Ignored,
