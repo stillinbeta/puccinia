@@ -5,6 +5,8 @@ jobs:
     - image: circleci/rust
     steps:
       - checkout
+      - restore_cache:
+          key: project-cache
       - run:
           name: Print version information
           command: rustc --version; cargo --version
@@ -20,6 +22,11 @@ jobs:
       - run:
           name: "Run clippy"
           command: cargo clippy -- -D warnings
+      - save_cache:
+          key: project-cache
+          paths:
+            - "~/.cargo"
+            - "./target"
   build:
     docker:
     - image: circleci/rust
