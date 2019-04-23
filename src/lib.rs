@@ -1,3 +1,5 @@
+use cursive::traits::Identifiable;
+use cursive::Cursive;
 use rand::rngs::SmallRng;
 use rand::FromEntropy;
 use rand::Rng;
@@ -24,6 +26,14 @@ impl Cell {
             Cell::Dead => Cell::Alive,
         }
     }
+}
+
+pub fn setup_cursive(siv: &mut Cursive) {
+    siv.add_global_callback('q', |s| s.quit());
+
+    siv.add_fullscreen_layer(crate::view::ResizableGrid::default().with_id("grid"));
+    siv.add_layer(crate::view::help_dialog());
+    siv.set_autorefresh(true);
 }
 
 #[derive(Debug, Clone, PartialEq)]

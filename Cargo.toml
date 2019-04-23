@@ -6,9 +6,9 @@ edition = "2018"
 
 [dependencies]
 rand = "0.6"
-cursive = { version = "0.11", default_features = false, features = ["termion-backend"] }
-termion = "1.5"
-# crossbeam-channel = "0.3.6"
+cursive = { path = "../Cursive", default_features = false, features = ["termion-telnet-backend", "termion-backend"] }
+termion = { git = "https://github.com/stillinbeta/termion.git", rev = "c13e858d3f4a1eef1317f10c8ed0237c61f38018" }
+crossbeam-channel = "0.3.6"
 tokio = "0.1.18"
 futures = "0.1"
-termiontelnet = { path = "../termiontelnet" }
+termiontelnet = { git = "https://github.com/stillinbeta/termiontelnet.git", rev = "5abf39f520080f8c44bfc8e7f882f30c1d55e5f2" }
