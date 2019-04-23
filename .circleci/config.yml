@@ -32,6 +32,8 @@ jobs:
     - image: circleci/rust
     steps:
       - checkout
+      - restore_cache:
+          key: project-cache
       - run:
           name: "Build release package"
           command: cargo build --release
@@ -44,10 +46,16 @@ jobs:
           name: "tag and push docker image"
           command: |
               TIME=$(date +%s)
-              docker tag puccinia stillinbeta/puccinia:$(TIME)
+              docker tag puccinia stillinbeta/puccinia:$TIME
               docker tag puccinia stillinbeta/puccinia:latest
-              docker push stillinbeta/puccinia:$(TIME)
+              docker push stillinbeta/puccinia:$TIME
               docker push stillinbeta/puccinia:latest
+      - save_cache:
+          key: project-cache
+          paths:
+            - "~/.cargo"
+            - "./target"
+
 
 
 workflows:
