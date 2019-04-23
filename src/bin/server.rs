@@ -4,7 +4,7 @@ extern crate termiontelnet;
 extern crate tokio;
 
 use crossbeam_channel::unbounded;
-use cursive::backend::termiontelnet::Connection;
+use cursive::backend::termiontelnet::{Connection, TelnetEvent};
 use futures::Stream;
 use std::io::{Error, ErrorKind};
 use std::thread;
@@ -26,6 +26,7 @@ fn main() {
 
             let task = sink
                 .send_all(futures::stream::iter_ok::<_, std::io::Error>(vec![
+                    // Set up the telnet terminal for Cursive
                     ServerEvents::Do(TelnetOption::WindowSize),
                     ServerEvents::Will(TelnetOption::Echo),
                     ServerEvents::Do(TelnetOption::LineMode),
@@ -46,12 +47,14 @@ fn main() {
                         c.run()
                     });
 
-                    stream.for_each(move |msg| match msg {
-                        ResizeEvent(w, h) => future::ok(println!("terminal now {}x{}", h, w)),
-                        TermionEvent(evt) => future::result(
-                            s.send(evt).map_err(|err| Error::new(ErrorKind::Other, err)),
-                        ),
-                        _ => future::ok(()),
+                    stream.for_each(move |msg| {
+                        let evt = match msg {
+                            ResizeEvent(w, h) => TelnetEvent::ResizeEvent(h, w),
+                            TermionEvent(evt) => TelnetEvent::TEvent(evt),
+                            _ => return future::ok(()),
+                        };
+
+                        future::result(s.send(evt).map_err(|err| Error::new(ErrorKind::Other, err)))
                     })
                 })
                 .map_err(|e| eprintln!("An error occured: {:?}", e));
